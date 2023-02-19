@@ -60,7 +60,5 @@ def update_cognito(settingJson):
 def lambda_handler(event, context):
     data = json.loads(event['body'])
     
-    if update_user_table(data) and update_cognito(data):
-        return {'statusCode': 204}
-    else:
-        return {'statusCode': 500}
+    rc = 204 if (update_user_table(data) and update_cognito(data)) else 500
+    return {'statusCode': rc}
