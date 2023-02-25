@@ -1,4 +1,5 @@
-import json, boto3, datetime, uuid
+import json, boto3, datetime
+from layer import getUniversityFromEmail
 
 ############ triggerCognitoPostConf_AddToDynDB ############
 # Created 2023-02-24 | Vegan Lroy
@@ -18,16 +19,15 @@ def lambda_handler(event, context):
     newUser = {
         "uid": event['request']['userAttributes']['sub'],
         "aboutMe": "",
-        "classHist": "",
-        "dispTags": "",
-        "dob": "",
+        "classHist": {""},
+        "dob": -1,
         "email": event['request']['userAttributes']['email'],
         "emailLastVerifiedDate": emailVerifiedDate,
         "fullName": event['request']['userAttributes']['name'],
         "pfpUrl": "",
-        "tags": "",
+        "tags": {""},
         "tutorRating": 0,
-        "univ": "",
+        "univ": getUniversityFromEmail(event['request']['userAttributes']['email']),
         "univExclExp": True,
         "username": event['userName']
         }
