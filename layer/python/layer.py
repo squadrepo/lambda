@@ -1,4 +1,5 @@
 import boto3
+from decimal import Decimal
 
 
 def layerTestPrint():
@@ -45,3 +46,11 @@ def getUniversityFromEmail(email):
     except:
         return 'error: could not retrieve'
     return response['Item']['name']
+
+
+def jsonDumpsSetDefault(obj):
+    if isinstance(obj, set):
+        return list(obj)
+    elif isinstance(obj,Decimal):
+        return int(obj)
+    raise TypeError
