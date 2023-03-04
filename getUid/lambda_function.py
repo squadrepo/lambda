@@ -1,6 +1,14 @@
 import json, boto3
 from boto3.dynamodb.conditions import Key
 
+## GETUID: {apiurl}/account/getUid?username={username} ##
+# Created 2023-03-03 | Vegan Lroy
+# LastRev 2023-03-03 | Vegan Lroy
+#
+# Lambda fn for finding uid from username on Users table
+#
+#########################################################
+
 def lambda_handler(event, context):
     data = event['queryStringParameters']
     username = data['username']
