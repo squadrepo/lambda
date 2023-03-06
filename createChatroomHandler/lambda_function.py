@@ -1,8 +1,8 @@
-import json, boto3, datetime, uuid
+import json, boto3, datetime, uuid, base64
 
 ## CREATECHATROOM HANDLER: {apiurl}/messages/createChatroom ##
 # Created 2023-02-27 | Vegan Lroy
-# LastRev 2023-02-27 | Vegan Lroy
+# LastRev 2023-03-04 | Vegan Lroy
 #
 # Lambda fn for handling creation of chatroom
 #
@@ -10,9 +10,16 @@ import json, boto3, datetime, uuid
 
 # TRIGGER CODE
 def lambda_handler(event, context):
-    data = json.loads(event['body'])
+    if 'isBase64Encoded' in event and event['isBase64Encoded']:
+        data = json.loads(base64.b64decode(event['body']))
+    else:
+        data = json.loads(event['body'])
     
-    userUids = set([data['requesterUid']] + data['memberUids'])
+    if len(data['memberUids']) == 0:
+        userUids = set([data['requesterUid']])
+    else:
+        userUids = set([data['requesterUid']] + data['memberUids'])
+        
     numberOfMembers = len(userUids)
     
     users     = boto3.resource("dynamodb").Table("Users")
@@ -33,16 +40,12 @@ def lambda_handler(event, context):
         "messageList": [],
         }
     
-    if   numberOfMembers == 1:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'Client-Error Description': 'Invalid number of members; only 1 unique uid in request'})
-        }
-    elif numberOfMembers == 2:
+    if numberOfMembers == 2:
         newChatroom['memberUids'] = userUids
     else:
         newChatroom['ownerUid']   = data['requesterUid']
-        newChatroom['memberUids'] = set(data['memberUids'])
+        if len(data['memberUids']) > 0:
+            newChatroom['memberUids'] = set(data['memberUids'])
     
     if 'openingMessage' in data:
         if len(data['openingMessage']['attachments']) == 0:

@@ -1,4 +1,4 @@
-import json, boto3, datetime
+import json, boto3, datetime, base64
 from layer import isAcademicEmail, getUniversityFromEmail
 
 ### EDIT SETTING HANDLER: {apiurl}/account/editSettings ###
@@ -94,7 +94,10 @@ def update_cognito(settingJson):
 
 # ENDPOINT WRAPPER
 def lambda_handler(event, context):
-    data = json.loads(event['body'])
+    if 'isBase64Encoded' in event and event['isBase64Encoded']:
+        data = json.loads(base64.b64decode(event['body']))
+    else:
+        data = json.loads(event['body'])
     
     if 'email' in data and not isAcademicEmail(data['email']):
         return {
