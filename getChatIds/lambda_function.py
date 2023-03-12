@@ -10,7 +10,6 @@ def getChat(chatdata):
     tableName = "ChatRooms"
     db = boto3.resource("dynamodb").Table(tableName)
     getOutPut = []
-    temp = {}
 
     for x in chatdata:
         try:
@@ -28,10 +27,15 @@ def getChat(chatdata):
             chatInfo = response['Items'][0]
             room = chatInfo['roomName']
             msglen = len(chatInfo['messageList'])
-            lastMSG = chatInfo['messageList'][msglen-1]
-            temp.update({'cid': x})
-            temp.update({'roomName': room})
-            temp.update({'messageList': lastMSG})
+            temp = {}
+            if msglen == 0:
+                temp.update({'cid': x})
+                temp.update({'roomName': room})
+            else:
+                lastMSG = chatInfo['messageList'][msglen-1]
+                temp.update({'cid': x})
+                temp.update({'roomName': room})
+                temp.update({'messageList': lastMSG})
             getOutPut.append(temp)
 
     return getOutPut
@@ -39,7 +43,7 @@ def getChat(chatdata):
 
 def lambda_handler(event, context):
     # TODO implement
-    data = event['queryStringParameters']['chatroomCids']
+    data = event['multiValueQueryStringParameters']['chatroomCids[]']
     # data = event['chatroomCids']
     sendBack = getChat(data)
 
