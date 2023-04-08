@@ -55,7 +55,7 @@ def lambda_handler(event, context):
                 KeyConditionExpression=Key('city').eq(pKeyVal)&Key('createTimestamp').between(timeFrom,timeEnd)
                 )
     else:
-        time = (int(datetime.datetime.now().timestamp()) - NUM_SECS_IN_WK) * 1000
+        time = int(datetime.datetime.now().timestamp()) - (NUM_SECS_IN_WK * 1000)
         
         if pKey == 'univAssoc':
             response = table.query(
