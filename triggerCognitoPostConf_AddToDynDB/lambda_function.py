@@ -3,7 +3,7 @@ from layer import getUniversityFromEmail
 
 ############ triggerCognitoPostConf_AddToDynDB ############
 # Created 2023-02-24 | Vegan Lroy
-# LastRev 2023-02-26 | Vegan Lroy
+# LastRev 2023-05-19 | Vegan Lroy
 #
 # Trigger for adding confirmed Cognito user to Users Table
 #
@@ -16,6 +16,7 @@ def lambda_handler(event, context):
 
     emailVerifiedDate = int(datetime.datetime.now().timestamp())
     
+    # NEW USER OBJ
     newUser = {
         "uid": event['request']['userAttributes']['sub'],
         "aboutMe": "",
@@ -30,7 +31,9 @@ def lambda_handler(event, context):
         "tutorRating": 0,
         "univ": getUniversityFromEmail(event['request']['userAttributes']['email']),
         "univExclExp": True,
-        "username": event['userName']
+        "username": event['userName'],
+        "eidsInterested": {""},
+        "eidsRsvpd": {""}
         }
     
     db.put_item(Item=newUser)

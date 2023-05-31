@@ -4,7 +4,7 @@ from layer import jsonDumpsSetDefault
 
 ## GET FOODPOSTS HANDLER: {apiurl}/foodEvent #####
 # Created 2023-04-14 | Vegan Lroy
-# LastRev 2023-04-14 | Vegan Lroy
+# LastRev 2023-05-18 | Vegan Lroy
 #
 # Lambda fn for getting food events in radius of
 # a specified coordinate (within x miles)
@@ -47,6 +47,7 @@ def lambda_handler(event, context):
     fEventsFinal = []
     for fEvent in response:
         unmarshalledEvent = unmarshall(fEvent)
+        unmarshalledEvent['commentCount'] = len(unmarshalledEvent['comments'])
         del unmarshalledEvent['comments']
         del unmarshalledEvent['posterUid']
         fEventsFinal.append(unmarshalledEvent)

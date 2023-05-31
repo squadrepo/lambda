@@ -1,10 +1,10 @@
-import json, dynamodbgeo, boto3
+import json, dynamodbgeo, boto3, base64
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
 from layer import jsonDumpsSetDefault
 
 ## RATE FOODPOST HANDLER: {apiurl}/foodEvent/rate ##
 # Created 2023-04-15 | Vegan Lroy
-# LastRev 2023-04-15 | Vegan Lroy
+# LastRev 2023-05-31 | Vegan Lroy
 #
 # Lambda fn for handling rating of food events
 #

@@ -39,6 +39,7 @@ def lambda_handler(event, context):
         pk = response['Items'][0]['univAssoc']
         sk = response['Items'][0]['createTimestamp']
     else:
+        print("no response 42")
         return {'statusCode': 500}
     
     if tentative:
@@ -93,7 +94,8 @@ def lambda_handler(event, context):
             )
             
         cid = response['Attributes']['chatroomCid']
-    except:
+    except Exception as error:
+        print(error)
         return {'statusCode': 500}
     
     # ADD USER TO CHATROOM, ADDS TO LATEST CHUNK
@@ -102,12 +104,13 @@ def lambda_handler(event, context):
             ScanIndexForward=False,
             Limit=1
         )
-    
+    print(response, cid, int(datetime.datetime.now().timestamp()))
     if len(response['Items']) == 1:
         members = response['Items'][0]['memberUids']
         pk = cid
         sk = response['Items'][0]['chunkCreateTimestamp']
     else:
+        print("no response 113")
         return {'statusCode': 500}
     
     if len(members) == 1 and list(members)[0] == "":
@@ -131,7 +134,8 @@ def lambda_handler(event, context):
                 ExpressionAttributeValues = expAttrVals,
                 ReturnValues = 'NONE'
             )
-    except:
+    except Exception as error:
+        print(error)
         return {'statusCode': 500}
     
     # ADD CHATROOM ID TO USER'S CHATROOM ID SET, ADD EID TO RSVP OR INTERESTED SET
@@ -193,6 +197,7 @@ def lambda_handler(event, context):
         
         expAttrVals = {':c': chatroomCids, ':m': eidsInterested, ':y': eidsRsvpd}
     else:
+        print("no item 200")
         return {'statusCode': 500}
     
     try:
@@ -202,8 +207,9 @@ def lambda_handler(event, context):
                 ExpressionAttributeValues = expAttrVals,
                 ReturnValues = 'NONE'
             )
-    except:
-        return {'statusCode': 500}
+    except Exception as error:
+        print(error)
+        return {'statusCode': 500, 'body': json.dumps({'message': "User update failed"}, default=jsonDumpsSetDefault)}
     
     if uidRemoved:
         return {'statusCode': 204}

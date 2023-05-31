@@ -22,8 +22,7 @@ def lambda_handler(event, context):
     usersToReVerify = response['Items']
 
     while 'LastEvaluatedKey' in response:
-        response = table.scan(FilterExpression=filterExp,
-                              ExclusiveStartKey=response['LastEvaluatedKey'])
+        response = table.scan(FilterExpression=filterExp, ExclusiveStartKey=response['LastEvaluatedKey'])
         usersToReVerify.extend(response['Items'])
 
     cognito = boto3.client('cognito-idp')
@@ -33,33 +32,34 @@ def lambda_handler(event, context):
         try:
             # Set email to one of our emails, so that we can trigger re-verification by setting back to their email
             cognito.admin_update_user_attributes(
-                UserPoolId=USER_POOL_ID,
-                Username=user['username'],
-                UserAttributes=[
-                    {
-                        'Name': 'email',
-                        'Value': 'squad.app.aws@gmail.com',
-                    },
-                    {
-                        'Name': 'email_verified',
-                        'Value': 'true',
-                    },
-                ],
+            UserPoolId=USER_POOL_ID,
+            Username=user['username'],
+            UserAttributes=[
+                {
+                    'Name': 'email',
+                    'Value': 'squad.app.aws@gmail.com',
+                },
+                {
+                    'Name': 'email_verified',
+                    'Value': 'true',
+                },
+            ],
             )
-
+            
             # Set email back to their actual email to trigger reverification
             cognito.admin_update_user_attributes(
-                UserPoolId=USER_POOL_ID,
-                Username=user['username'],
-                UserAttributes=[
-                    {
-                        'Name': 'email',
-                        'Value': user["email"],
-                    },
-                ],
+            UserPoolId=USER_POOL_ID,
+            Username=user['username'],
+            UserAttributes=[
+                {
+                    'Name': 'email',
+                    'Value': user["email"],
+                },
+            ],
             )
         except Exception as e:
             print(e)
             pass
+
 
     return event['time']

@@ -3,7 +3,7 @@ from layer import isAcademicEmail, getUniversityFromEmail
 
 ### EDIT SETTING HANDLER: {apiurl}/account/editSettings ###
 # Created 2023-02-18 | Vegan Lroy
-# LastRev 2023-02-24 | Vegan Lroy
+# LastRev 2023-03-04 | Vegan Lroy
 #
 # Lambda fn for handling update of user settings
 # (i.e. university email, password, dob, univExclExp)
@@ -55,7 +55,8 @@ def update_user_table(settingJson):
             if 'email' in settingJson:
                 OLD_EMAIL = res['Attributes']['email']
                 NEW_EMAIL = settingJson['email']
-        except:
+        except Exception as e:
+            print(e)
             return False
         else:
             return True
@@ -76,7 +77,8 @@ def update_cognito(settingJson):
                 Username=USER_NAME,
                 UserAttributes=[{'Name':'email','Value':NEW_EMAIL}]
             )
-        except:
+        except Exception as e:
+            print(e)
             return False
     
     if 'password' in settingJson:
@@ -87,18 +89,20 @@ def update_cognito(settingJson):
                 Password=settingJson['password'],
                 Permanent=True
             )
-        except:
+        except Exception as e:
+            print(e)
             return False
     
     return True
 
 # ENDPOINT WRAPPER
 def lambda_handler(event, context):
+    print(event)
     if 'isBase64Encoded' in event and event['isBase64Encoded']:
         data = json.loads(base64.b64decode(event['body']))
     else:
         data = json.loads(event['body'])
-    
+    print(data)
     if 'email' in data and not isAcademicEmail(data['email']):
         return {
             'statusCode': 400,
